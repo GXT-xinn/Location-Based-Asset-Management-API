@@ -1,0 +1,22 @@
+{
+  "name": "cege0043-api-21-22-gxt-xinn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dataAPI.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/ucl-geospatial-21-22/cege0043-api-21-22-GXT-xinn.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ucl-geospatial-21-22/cege0043-api-21-22-GXT-xinn/issues"
+  },
+  "homepage": "https://github.com/ucl-geospatial-21-22/cege0043-api-21-22-GXT-xinn#readme",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}
