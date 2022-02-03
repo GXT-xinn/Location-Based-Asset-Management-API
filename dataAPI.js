@@ -11,3 +11,19 @@ httpServer.listen(4480);
 app.get('/',function (req,res) {
 	res.send("Hello World from the class test server");
 });
+
+// adding functionality to allow cross-origin queries when PhoneGap is running a server 
+app.use(function(req, res, next) { 
+ res.setHeader("Access-Control-Allow-Origin", "*"); 
+ res.setHeader("Access-Control-Allow-Headers", "X-Requested-With"); 
+ res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE'); 
+ next(); 
+});
+
+// adding functionality to log the requests 
+ app.use(function (req, res, next) { 
+ var filename = path.basename(req.url); 
+ var extension = path.extname(filename); 
+ console.log("The file " + filename + " was requested."); 
+ next(); 
+});
