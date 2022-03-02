@@ -23,3 +23,16 @@ var pool = new pg.Pool(config);
  
 const bodyParser = require('body-parser');
 crud.use(bodyParser.urlencoded({ extended: true })); 
+
+// test endpoint for GET requests (can be called from a browser URL)
+crud.get('/testCRUD',function (req,res) {
+	res.json({message:req.originalUrl+" " +"GET REQUEST>"});
+	});
+   
+// test endpoint for POST requests - can only be called from AJAX
+crud.post('/testCRUD',function (req,res) {
+	console.log("post request" + req.body);
+	res.json({message:req.body});
+    });
+       
+module.exports = crud;
