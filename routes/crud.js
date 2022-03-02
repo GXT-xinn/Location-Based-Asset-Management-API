@@ -21,3 +21,5 @@ for (var i = 0; i < configarray.length; i++) {
 var pool = new pg.Pool(config);
  console.log(config); 
  
+const bodyParser = require('body-parser');
+crud.use(bodyParser.urlencoded({ extended: true })); 
