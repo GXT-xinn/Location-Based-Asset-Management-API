@@ -7,10 +7,10 @@ var fs = require('fs');
 // get the username - this will ensure that we can use the same code on multiple machines
 var os = require('os');
  const userInfo = os.userInfo();
- const username = userInfo.xintguan;
- console.log(username);
- // locate the database login details
-var configtext = ""+fs.readFileSync("/home/"+xintguan+"/certs/postGISConnection.js"); 
+ const username = userInfo.username; 
+ console.log(username); 
+ // locate the database login details 
+ var configtext = ""+fs.readFileSync("/home/"+username+"/certs/postGISConnection.js");
  // now convert the configruation file into the correct format -i.e. a name/value pair array
 var configarray = configtext.split(",");
 var config = {};
@@ -23,6 +23,25 @@ var pool = new pg.Pool(config);
  
 const bodyParser = require('body-parser');
 crud.use(bodyParser.urlencoded({ extended: true })); 
+
+
+// Getting user id
+ crud.get('/getUserId', function (req,res) { 
+ pool.connect(function(err,client,done) { 
+ if(err){ 
+ console.log("not able to get connection "+ err); 
+ res.status(400).send(err); 
+ } 
+ client.query('select user_id from ucfscde.users where user_name = current_user' ,function(err,result) { 
+ done(); 
+ if(err){
+ console.log(err); 
+ res.status(400).send(err); 
+ } 
+ res.status(200).send(result.rows); 
+ }); 
+ }); 
+ });
 
 // test endpoint for GET requests (can be called from a browser URL)
 crud.get('/testCRUD',function (req,res) {

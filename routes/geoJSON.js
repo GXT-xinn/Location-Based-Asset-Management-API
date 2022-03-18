@@ -6,10 +6,10 @@ var express = require('express');
  // get the username - this will ensure that we can use the same code on multiple machines 
  var os = require('os'); 
  const userInfo = os.userInfo(); 
- const username = userInfo.xintguan; 
+ const username = userInfo.username; 
  console.log(username); 
  // locate the database login details 
- var configtext = ""+fs.readFileSync("/home/xintguan/certs/postGISConnection.js"); 
+ var configtext = ""+fs.readFileSync("/home/"+username+"/certs/postGISConnection.js");
 // now convert the configuration file into the correct format -i.e. a name/value pair array 
  var configarray = configtext.split(","); 
  var config = {}; 
