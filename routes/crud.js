@@ -31,7 +31,7 @@ crud.get('/testCRUD',function (req,res) {
    
 // Getting user id
 crud.get('/getUserId', function (req,res) { 
- pool.connect(function(err,client,done) { 
+	pool.connect(function(err,client,done) { 
 	 if(err){ 
 	 console.log("not able to get connection "+ err); 
 	 res.status(400).send(err); 
@@ -47,6 +47,29 @@ crud.get('/getUserId', function (req,res) {
 	}); 
  });   
  
+ 
+// Insert new asset information functionality
+crud.post ('/insertAssetPoint/',function (req,res) {
+	pool.connect(function(err,client,done) { 
+	if(err){
+		console.log("not able to get connection "+ err); 
+		res.status(400).send(err); 
+	} 
+	var geometrystring = "st_geomfromtext('POINT("+req.body.longitude+ " "+req.body.latitude +")',4326)";
+    var querystring = "INSERT into cege0043.asset_information (asset_name,installation_date, location) values ";
+    querystring += "($1,$2,";
+    querystring += geometrystring + ")";
+	console.log(querystring)
+	client.query(querystring,function(err,result) { 
+		done(); 
+		if(err){
+			console.log(err); 
+			res.status(400).send(err); 
+		} 
+		res.status(200).send(result.rows); 
+		}); 
+	});
+});
  
  
 // test endpoint for POST requests - can only be called from AJAX
