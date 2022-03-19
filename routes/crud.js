@@ -23,6 +23,7 @@ var pool = new pg.Pool(config);
  
 const bodyParser = require('body-parser');
 crud.use(bodyParser.urlencoded({ extended: true })); 
+crud.use(bodyParser.json());
 
 // test endpoint for GET requests (can be called from a browser URL)
 crud.get('/testCRUD',function (req,res) {
@@ -49,26 +50,36 @@ crud.get('/getUserId', function (req,res) {
  
  
 // Insert new asset information functionality
-crud.post ('/insertAssetPoint/',function (req,res) {
-	pool.connect(function(err,client,done) { 
-	if(err){
-		console.log("not able to get connection "+ err); 
-		res.status(400).send(err); 
-	} 
-	var geometrystring = "st_geomfromtext('POINT("+req.body.longitude+ " "+req.body.latitude +")',4326)";
-    var querystring = "INSERT into cege0043.asset_information (asset_name,installation_date, location) values ";
-    querystring += "($1,$2,";
-    querystring += geometrystring + ")";
-	console.log(querystring)
-	client.query(querystring,function(err,result) { 
-		done(); 
-		if(err){
-			console.log(err); 
-			res.status(400).send(err); 
-		} 
-		res.status(200).send(result.rows); 
-		}); 
-	});
+crud.post('/insertAssetPoint/',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+
+
+
+        var assetname = req.body.assetname ;
+        var installationDate =  req.body.installationDate ;
+        var geometryString = "st_geomfromtext('POINT(" +req.body.longitude +" " + req.body.latitude+")',4326)";
+
+
+		var querystring = "INSERT into cege0043.asset_information (asset_name,installation_date, location) values ";
+		querystring += "($1,$2,";
+		querystring += geometryString + ")";
+
+
+        client.query(querystring, [assetname,installationDate],function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send("Form Data "+ req.body.assetname+ " has been inserted");
+           });
+
+    });
 });
  
  
@@ -77,5 +88,6 @@ crud.post('/testCRUD',function (req,res) {
 	console.log("post request" + req.body);
 	res.json({message:req.body});
     });
+	
        
 module.exports = crud;
