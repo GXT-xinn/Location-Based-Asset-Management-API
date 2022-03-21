@@ -15,7 +15,7 @@ app.get('/',function (req,res) {
 // adding functionality to allow cross-origin queries when PhoneGap is running a server 
 app.use(function(req, res, next) { 
  res.setHeader("Access-Control-Allow-Origin", "*"); 
- res.setHeader("Access-Control-Allow-Headers", "X-Requested-With"); 
+ res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); 
  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE'); 
  next(); 
 });
@@ -30,13 +30,6 @@ app.use(function(req, res, next) {
 
 const geoJSON = require('./routes/geoJSON'); 
 app.use('/', geoJSON);
-
-// adding CORS
-app.use(function(req, res, next) {
- res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
- res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
- next();
-});
 
 const crud = require('./routes/crud');
 app.use('/', crud); 
