@@ -47,7 +47,7 @@ crud.get('/getUserId', function (req,res) {
 	}); 
  });   
  
-
+// Insert condition information for exsiting assets
 crud.post('/insertConditionInformation',function(req,res){
     // so the parameters form part of the BODY of the request rather than the RESTful API
     pool.connect(function(err,client,done) {
@@ -55,11 +55,11 @@ crud.post('/insertConditionInformation',function(req,res){
             console.log("not able to get connection "+ err);
             res.status(400).send(err);
         }
-
+		// request value to perform the SQL query
         var asset_name = req.body.asset_name;
         var condition = req.body.condition;
 
-
+		// SQL query for inserting condition information
 		var querystring = "INSERT into cege0043.asset_condition_information (asset_id, condition_id) values (";
 		querystring += "(select id from cege0043.asset_information where asset_name = $1),";
 		querystring += "(select id from cege0043.asset_condition_options where condition_description = $2))";
@@ -84,13 +84,11 @@ crud.post('/insertAssetPoint',function(req,res){
             console.log("not able to get connection "+ err);
             res.status(400).send(err);
         }
-
+		// request value to perform the SQL query
         var AssetName = req.body.AssetName;
         var InstallDate = req.body.InstallDate;
-		
+		// SQL query for inserting condition information
         var geometryString = "st_geomfromtext('POINT(" +req.body.longitude +" " + req.body.latitude+")',4326)";
-
-
 		var querystring = "INSERT into cege0043.asset_information(asset_name,installation_date, location) values ";
 		querystring += "($1,$2,";
 		querystring += geometryString + ")";
@@ -117,6 +115,7 @@ crud.get('/geoJSONUserId/:user_id',function(req,res){
             console.log("not able to get connection "+ err);
             res.status(400).send(err);
         }
+		
 	   var user_id = req.params.user_id;
        var colnames = "asset_id, asset_name, installation_date, latest_condition_report_date, condition_description";
 		
