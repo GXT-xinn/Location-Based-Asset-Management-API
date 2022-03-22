@@ -2,6 +2,7 @@ var express = require('express');
 var pg = require('pg');
 var crud = require('express').Router();
 var fs = require('fs');
+
 var os = require('os');
 const userInfo = os.userInfo();
 const username = userInfo.username;
@@ -36,8 +37,8 @@ crud.get('/getUserId', function (req,res) {
 	 res.status(400).send(err); 
 	 } 
 	 client.query(' select user_id from ucfscde.users where user_name = current_user' ,function(err,result) { 
-	 done(); 
-		 if(err){
+		done(); 
+		if(err){
 		 console.log(err); 
 		 res.status(400).send(err); 
 		 } 
@@ -55,15 +56,15 @@ crud.post('/insertConditionInformation',function(req,res){
             res.status(400).send(err);
         }
 
-        var assetID = req.body.assetID ;
-        var condition = req.body.condition ;
+        var asset_name = req.body.asset_name;
+        var condition = req.body.condition;
 
 
 		var querystring = "INSERT into cege0043.asset_condition_information (asset_id, condition_id) values (";
-		querystring += "(select id from cege0043.asset_information where asset_name = $1),(select id from cege0043.asset_condition_options where condition_description = $2))";
+		querystring += "(select id from cege0043.asset_information where asset_name = $1),";
+		querystring += "(select id from cege0043.asset_condition_options where condition_description = $2))";
 
-
-        client.query(querystring, [assetID,condition],function(err,result) {
+        client.query(querystring, [asset_name, condition],function(err,result) {
                 done();
                 if(err){
                    console.log(err);
