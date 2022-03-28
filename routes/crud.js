@@ -36,7 +36,7 @@ crud.get('/getUserId', function (req,res) {
 	 console.log("not able to get connection "+ err); 
 	 res.status(400).send(err); 
 	 } 
-	 client.query(' select user_id from ucfscde.users where user_name = current_user' ,function(err,result) { 
+	 client.query(" select user_id from ucfscde.users where user_name = current_user" ,function(err,result) { 
 		done(); 
 		if(err){
 		 console.log(err); 
@@ -70,7 +70,7 @@ crud.post('/insertConditionInformation',function(req,res){
                    console.log(err);
                    res.status(400).send(err);
                }
-               res.status(200).send(result.rows);
+               res.status(200).send("Form Data "+ req.body.asset_name+ " has been inserted");
            });
 
     });
@@ -87,6 +87,7 @@ crud.post('/insertAssetPoint',function(req,res){
 		// request value to perform the SQL query
         var AssetName = req.body.AssetName;
         var InstallDate = req.body.InstallDate;
+		
 		// SQL query for inserting condition information
         var geometryString = "st_geomfromtext('POINT(" +req.body.longitude +" " + req.body.latitude+")',4326)";
 		var querystring = "INSERT into cege0043.asset_information(asset_name,installation_date, location) values ";
@@ -137,7 +138,38 @@ crud.get('/geoJSONUserId/:user_id',function(req,res){
 
     });
 });
- 
+
+
+
+////////////////////////////
+// Advance Functionality 2
+// List of Assets in Best Condition
+crud.get('/assetsInGreatCondition',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+
+       var querystring = " select array_to_json (array_agg(d)) from (select c.* from cege0043.asset_information c";
+			querystring = querystring + " inner join ";
+			querystring = querystring + " (select count(*) as best_condition, asset_id from cege0043.asset_condition_information where ";
+			querystring = querystring + " condition_id in (select id from cege0043.asset_condition_options where condition_description like '%very good%') ";
+			querystring = querystring + " group by asset_id order by best_condition desc) b on b.asset_id = c.id) d";
+
+
+        client.query(querystring,function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send(result.rows);
+           });
+
+    });
+});
 
  
 // test endpoint for POST requests - can only be called from AJAX
