@@ -171,6 +171,34 @@ crud.get('/assetsInGreatCondition',function(req,res){
     });
 });
 
+
+// Daily report rates
+
+crud.get('/dailyParticipationRates',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+
+       var querystring = " select  array_to_json (array_agg(c)) from ";
+			querystring = querystring + " (select day, sum(reports_submitted) as reports_submitted, sum(not_working) as reports_not_working ";
+			querystring = querystring + " from cege0043.report_summary ";
+			querystring = querystring + " group by day) c";
+
+
+        client.query(querystring,function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send(result.rows);
+           });
+
+    });
+});
  
 // test endpoint for POST requests - can only be called from AJAX
 crud.post('/testCRUD',function (req,res) {
