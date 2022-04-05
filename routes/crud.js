@@ -225,7 +225,37 @@ crud.get('/userConditionReports/:user_id',function(req,res){
            });
     });
 });
- 
+
+
+// Tell user their ranking based on the number of report they have submitted in total
+
+crud.get('/userRanking/:user_id',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+		
+	    var user_id = req.params.user_id;
+		
+        var querystring = " select array_to_json (array_agg(hh)) from ";
+		    querystring = querystring + "(select c.rank from (SELECT b.user_id, rank()over (order by num_reports desc) as rank  ";
+			querystring = querystring + "(from (select COUNT(*) AS num_reports, user_id  ";
+			querystring = querystring + " from cege0043.asset_condition_information ";
+			querystring = querystring + " group by user_id) b) c where c.user_id = $1) hh ";
+
+        client.query(querystring,[user_id],function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send(result.rows);
+           });
+    });
+});
+
 // test endpoint for POST requests - can only be called from AJAX
 crud.post('/testCRUD',function (req,res) {
 	console.log("post request" + req.body);
