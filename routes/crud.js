@@ -213,7 +213,7 @@ crud.get('/userConditionReports/:user_id',function(req,res){
 	    var user_id = req.params.user_id;
 		
         var querystring = " select array_to_json (array_agg(c)) from ";
-		    querystring = querystring + "(SELECT COUNT(*) AS num_reports from cege0043.asset_condition_information where user_id = $1) c;, ";
+		    querystring = querystring + "(SELECT COUNT(*) AS num_reports from cege0043.asset_condition_information where user_id = $1) c ";
 
         client.query(querystring,[user_id],function(err,result) {
                 done();
