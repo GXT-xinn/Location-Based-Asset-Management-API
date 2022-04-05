@@ -241,7 +241,7 @@ crud.get('/userRanking/:user_id',function(req,res){
 		
         var querystring = " select array_to_json (array_agg(hh)) from ";
 		    querystring = querystring + "(select c.rank from (SELECT b.user_id, rank()over (order by num_reports desc) as rank  ";
-			querystring = querystring + "(from (select COUNT(*) AS num_reports, user_id  ";
+			querystring = querystring + " from (select COUNT(*) AS num_reports, user_id  ";
 			querystring = querystring + " from cege0043.asset_condition_information ";
 			querystring = querystring + " group by user_id) b) c where c.user_id = $1) hh ";
 
