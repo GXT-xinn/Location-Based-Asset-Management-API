@@ -200,6 +200,32 @@ crud.get('/dailyParticipationRates',function(req,res){
     });
 });
  
+// Sum of the reports sumbmitted by user
+
+crud.get('/userConditionReports/:user_id',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+		
+	    var user_id = req.params.user_id;
+		
+        var querystring = " select array_to_json (array_agg(c)) from ";
+		    querystring = querystring + "(SELECT COUNT(*) AS num_reports from cege0043.asset_condition_information where user_id = $1) c;, ";
+
+        client.query(querystring,[user_id],function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send(result.rows);
+           });
+    });
+});
+ 
 // test endpoint for POST requests - can only be called from AJAX
 crud.post('/testCRUD',function (req,res) {
 	console.log("post request" + req.body);
