@@ -228,7 +228,35 @@ crud.get('/fiveClosestAssets/:latitude/:longitude',function(req,res){
     });
 });
 
+// showing the last 5 reports created by the user (colour coded depending on the condition value)
 
+crud.get('/lastFiveConditionReports/:user_id',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+		
+	    var user_id = req.params.user_id;
+		
+        var querystring = " SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features  FROM   ";
+		    querystring = querystring + "(SELECT 'Feature' As type     , ST_AsGeoJSON(lg.location)::json As geometry, ";
+			querystring = querystring + " row_to_json((SELECT l FROM (SELECT id,user_id, asset_name, condition_description ) As l ";
+			querystring = querystring + " )) As properties from ";
+			querystring = querystring + " (select * from cege0043.condition_reports_with_text_descriptions where user_id = $1";
+			querystring = querystring + " order by timestamp desc limit 5) as lg) As f";
+			
+        client.query(querystring,[user_id],function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send(result.rows);
+           });
+    });
+});
 
 ////////////////////////////
 // Advance Functionality 2
