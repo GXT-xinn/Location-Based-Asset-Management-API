@@ -258,6 +258,38 @@ crud.get('/lastFiveConditionReports/:user_id',function(req,res){
     });
 });
 
+
+// shows assets and calculates proximity alerts for assets that the user hasn’t already given a condition report for in the last 3 days
+
+crud.get('/conditionReportMissing/:user_id',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+		
+	    var user_id = req.params.user_id;
+		
+        var querystring = " SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features  FROM  ";
+		    querystring = querystring + "(SELECT 'Feature' As type     , ST_AsGeoJSON(lg.location)::json As geometry, ";
+			querystring = querystring + " row_to_json((SELECT l FROM (SELECT asset_id, asset_name, installation_date, latest_condition_report_date, ";
+			querystring = querystring + " condition_description) As l )) As properties from";
+			querystring = querystring + " (select * from cege0043.asset_with_latest_condition where asset_id not in (";
+			querystring = querystring + " select asset_id from cege0043.asset_condition_information where user_id = $1 and ";
+			querystring = querystring + "timestamp > NOW()::DATE-EXTRACT(DOW FROM NOW())::INTEGER-3)  ) as lg) As f ";
+			
+        client.query(querystring,[user_id],function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send(result.rows);
+           });
+    });
+});
+
 ////////////////////////////
 // Advance Functionality 2
 // List of Assets in Best Condition
