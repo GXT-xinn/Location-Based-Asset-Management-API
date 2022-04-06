@@ -101,12 +101,14 @@ crud.post('/insertAssetPoint',function(req,res){
                    console.log(err);
                    res.status(400).send(err);
                }
-               res.status(200).send(result.rows);
+               res.status(200).send("Form Data "+ req.body.AssetName+ " has been inserted");
            });
 
     });
 });
- 
+
+
+
  
 // Insert new asset information functionality
 crud.get('/geoJSONUserId/:user_id',function(req,res){
@@ -136,6 +138,93 @@ crud.get('/geoJSONUserId/:user_id',function(req,res){
                res.status(200).send(result.rows);
            });
 
+    });
+});
+
+// Sum of the reports sumbmitted by user
+
+crud.get('/userConditionReports/:user_id',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+		
+	    var user_id = req.params.user_id;
+		
+        var querystring = " select array_to_json (array_agg(c)) from ";
+		    querystring = querystring + "(SELECT COUNT(*) AS num_reports from cege0043.asset_condition_information where user_id = $1) c ";
+
+        client.query(querystring,[user_id],function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send(result.rows);
+           });
+    });
+});
+
+
+// Tell user their ranking based on the number of report they have submitted in total
+
+crud.get('/userRanking/:user_id',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+		
+	    var user_id = req.params.user_id;
+		
+        var querystring = " select array_to_json (array_agg(hh)) from ";
+		    querystring = querystring + "(select c.rank from (SELECT b.user_id, rank()over (order by num_reports desc) as rank  ";
+			querystring = querystring + " from (select COUNT(*) AS num_reports, user_id  ";
+			querystring = querystring + " from cege0043.asset_condition_information ";
+			querystring = querystring + " group by user_id) b) c where c.user_id = $1) hh ";
+
+        client.query(querystring,[user_id],function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send(result.rows);
+           });
+    });
+});
+
+
+
+// Show 5 assets closest to the user location
+
+crud.get('/fiveClosestAssets/:latitude/:longitude',function(req,res){
+    // so the parameters form part of the BODY of the request rather than the RESTful API
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+		
+        var querystring = " SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features  FROM  ";
+		    querystring = querystring + "(SELECT 'Feature' As type     , ST_AsGeoJSON(lg.location)::json As geometry,  ";
+			querystring = querystring + " row_to_json((SELECT l FROM (SELECT id, asset_name, installation_date) As l )) As properties ";
+			querystring = querystring + " FROM   (select c.* from cege0043.asset_information c ";
+			querystring = querystring + " inner join (select id, st_distance(a.location, st_geomfromtext('POINT("+req.params.latitude+" "+req.params.longitude+")',4326)) as distance ";
+			querystring = querystring + " from cege0043.asset_information a order by distance asc";
+			querystring = querystring + " limit 5) b  on c.id = b.id ) as lg) As f";
+
+        client.query(querystring, function(err,result) {
+                done();
+                if(err){
+                   console.log(err);
+                   res.status(400).send(err);
+               }
+               res.status(200).send(result.rows);
+           });
     });
 });
 
@@ -200,61 +289,7 @@ crud.get('/dailyParticipationRates',function(req,res){
     });
 });
  
-// Sum of the reports sumbmitted by user
 
-crud.get('/userConditionReports/:user_id',function(req,res){
-    // so the parameters form part of the BODY of the request rather than the RESTful API
-    pool.connect(function(err,client,done) {
-        if(err){
-            console.log("not able to get connection "+ err);
-            res.status(400).send(err);
-        }
-		
-	    var user_id = req.params.user_id;
-		
-        var querystring = " select array_to_json (array_agg(c)) from ";
-		    querystring = querystring + "(SELECT COUNT(*) AS num_reports from cege0043.asset_condition_information where user_id = $1) c ";
-
-        client.query(querystring,[user_id],function(err,result) {
-                done();
-                if(err){
-                   console.log(err);
-                   res.status(400).send(err);
-               }
-               res.status(200).send(result.rows);
-           });
-    });
-});
-
-
-// Tell user their ranking based on the number of report they have submitted in total
-
-crud.get('/userRanking/:user_id',function(req,res){
-    // so the parameters form part of the BODY of the request rather than the RESTful API
-    pool.connect(function(err,client,done) {
-        if(err){
-            console.log("not able to get connection "+ err);
-            res.status(400).send(err);
-        }
-		
-	    var user_id = req.params.user_id;
-		
-        var querystring = " select array_to_json (array_agg(hh)) from ";
-		    querystring = querystring + "(select c.rank from (SELECT b.user_id, rank()over (order by num_reports desc) as rank  ";
-			querystring = querystring + " from (select COUNT(*) AS num_reports, user_id  ";
-			querystring = querystring + " from cege0043.asset_condition_information ";
-			querystring = querystring + " group by user_id) b) c where c.user_id = $1) hh ";
-
-        client.query(querystring,[user_id],function(err,result) {
-                done();
-                if(err){
-                   console.log(err);
-                   res.status(400).send(err);
-               }
-               res.status(200).send(result.rows);
-           });
-    });
-});
 
 // test endpoint for POST requests - can only be called from AJAX
 crud.post('/testCRUD',function (req,res) {
