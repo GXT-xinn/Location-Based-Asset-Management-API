@@ -31,5 +31,3 @@ app.use(function (req, res, next) {
 
 const crud = require('./routes/crud');
 app.use('/', crud); 
-const geoJSON = require('./routes/geoJSON');
-app.use('/', geoJSON);
