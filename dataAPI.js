@@ -21,7 +21,7 @@ app.use(function(req, res, next) {
 });
 
 // adding functionality to log the requests 
- app.use(function (req, res, next) { 
+app.use(function (req, res, next) { 
  var filename = path.basename(req.url); 
  var extension = path.extname(filename); 
  console.log("The file " + filename + " was requested."); 
@@ -31,3 +31,5 @@ app.use(function(req, res, next) {
 
 const crud = require('./routes/crud');
 app.use('/', crud); 
+const geoJSON = require('./routes/geoJSON');
+app.use('/', geoJSON);
