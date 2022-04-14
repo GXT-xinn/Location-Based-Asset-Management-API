@@ -1,6 +1,6 @@
 # Asset Condition Assessment API
 <a name="top"></a>
-A technical guide for developping a simple application server to handle data request for the [Asset Condition Assessment App](https://github.com/ucl-geospatial-21-22/cege0043-apps-21-22-GXT-xinn). This server body and funtion for root request are stored in ```dataAPI.js``` file. This express HTTPS server provides the functionality to interact with the PostgreSQL database, including save, remove, retreive data as GeoJSON file from the database and return confirm receipts when interaction completed. Funtions to support those interactions are stored separatly in the ```crud.js``` file for debugging purpose. You will encounter *Not Secure* alert while testing the server, because this is a HTTPS server with self signed certificate. You will need to manually add the certificate to the browser to omit this alert. However, this would not impact the functionality of the server. 
+A technical guide for developping a simple application server to handle data request for the [Asset Condition Assessment App](https://github.com/ucl-geospatial-21-22/cege0043-apps-21-22-GXT-xinn). This server body and funtion for root request are stored in ```dataAPI.js``` file. This express HTTPS server provides the functionality to interact with the PostgreSQL database, including save, remove, retreive data as GeoJSON file from the database and return confirm receipts when interaction completed. Funtions to support those interactions are stored separatly in the ```crud.js``` file for debugging purpose. You will encounter ***Not Secure*** alert while testing the server, because this is a HTTPS server with self signed certificate. You will need to manually add the certificate to the browser to omit this alert. However, this would not impact the functionality of the server. 
 
 ## Table of Contents
 
@@ -34,7 +34,7 @@ A technical guide for developping a simple application server to handle data req
 <a name="2"></a>
 ### 2. Deployment
 
-* **Procedures to deploy this application server**:
+* ***Procedures to deploy this application server***:
 
 1. Clone the source code of this api from Github to CEGE server at ```home/studentuser/code``` by typing in the command line (terminal) window for Ubuntu: 
 
@@ -172,9 +172,9 @@ The files associated to this RESTful API are located in the ```cege0043-api-21-2
 			|~/dailyParticipationRates         	|  GET requests.  |	This request gives the daily reporting rates for the past week, categorized into two types: reports_submitted and reports_not_working (in worst condition), in json array format. |
 			
 		<a name="get"></a>
-		* GET requests: The request can be called from a browser URL.
+		* **GET requests**: The request can be called from a browser URL.
 		<a name="post"></a>
-		* POST requests: The request can only be called from AJAX.
+		* **POST requests**: The request can only be called from AJAX.
 			
 
 [Go to Top](#top)
@@ -182,6 +182,9 @@ The files associated to this RESTful API are located in the ```cege0043-api-21-2
 
 <a name="5"></a>
 ### 5. Examples: Testing Results
+
+The examples only included the results returned from the endpoints of GET requests.
+You should be able to see similar results when you successfully followed the steps in the [Deployment](#2) section.
 
 * https://cege0043-2022-45.cs.ucl.ac.uk/api/getUserId
 ```json
