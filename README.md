@@ -1,6 +1,6 @@
 # Asset Condition Assessment API
 <a name="top"></a>
-A technical guide for developping a simple application server to handle data request for the [Asset Condition Assessment App](https://github.com/ucl-geospatial-21-22/cege0043-apps-21-22-GXT-xinn). This server body is stored in ```dataAPI.js``` file. This RESTful API provides the functionality to interact with the PostgreSQL database, including save, remove, retreive data as GeoJSON file from the database and return confirm receipts when interaction completed. Funtions to support those interactions are stored separatly in the ```crud.js``` file for debugging purpose. 
+A technical guide for developping a simple application server to handle data request for the [Asset Condition Assessment App](https://github.com/ucl-geospatial-21-22/cege0043-apps-21-22-GXT-xinn). This server body and funtion for root request are stored in ```dataAPI.js``` file. This express HTTPS server provides the functionality to interact with the PostgreSQL database, including save, remove, retreive data as GeoJSON file from the database and return confirm receipts when interaction completed. Funtions to support those interactions are stored separatly in the ```crud.js``` file for debugging purpose. You will encounter *Not Secure* alert while testing the server, because this is a HTTPS server with self signed certificate. You will need to manually add the certificate to the browser to omit this alert. However, this would not impact the functionality of the server. 
 
 ## Table of Contents
 
@@ -8,7 +8,7 @@ A technical guide for developping a simple application server to handle data req
 2. [Deployment](#2)
 3. [Testing](#3)
 4. [File description](#4)
-5. [Examples: Testing Results] (#5)
+5. [Examples: Testing Results](#5)
 6. [Acknowledgments](#6)
 
 ## Getting Started
@@ -25,8 +25,9 @@ A technical guide for developping a simple application server to handle data req
 
 #### External Libraries
 
-* NPM express package
-* PG package
+* This server is develop based on express router in the express package from the npm Registry. 
+
+* To enable connection to PostgreSQL, it is necessary to download and install pg package from npm Registry. It contains a collection of NodeJS modules for interfacing with your PostgreSQL database, which supports for callbacks, promises, async/await, connection pooling, prepared statements, cursors, and so on. With pg required, SQL queries can be used to construct the requests.
 
 [Go to Top](#top)
 
@@ -45,11 +46,11 @@ $ git clone https://github.com/ucl-geospatial-21-22/cege0043-api-21-22-GXT-xinn.
 2. Create a file called ```postGISConnection.js``` to store the user information for database connection, and save the file to ```/home/studentuser/certs``` directory, **which you will need to create the folder first**, format like the following:
 
 ```javascript
-host: *XXX*,
-user: *userXXX*,
-database: *ucfscde*,
-password: *cege0052XXXXXX*,
-port: *5432*
+host: XXX,
+user: userXXX,
+database: ucfscde,
+password: cege0052XXXXXX,
+port: 5432
 ```
 
 3. Download and install the Node.js
@@ -154,7 +155,7 @@ The files associated to this RESTful API are located in the ```cege0043-api-21-2
 			While the database login information was created and stored in the ```/home/studentuser/certs/postGISConnection.js``` as required in the deployment section.
 			Details in the configruation file will be converted into the pair array format to successfully connnect to the database using a connection ```pool```.
 			
-			* **Main functionalities**:
+			* **ENDPOINTS**:
 		
 			|       request  					|    type of request   |	  description     |
 			|  -------------------------------- |    --------------    | 	--------------    |
@@ -170,10 +171,10 @@ The files associated to this RESTful API are located in the ```cege0043-api-21-2
 			|~/assetsInGreatCondition         	|  GET requests.  |	This request gives list of all the assets with at least one report saying that they are in the best condition in json array format.  |
 			|~/dailyParticipationRates         	|  GET requests.  |	This request gives the daily reporting rates for the past week, categorized into two types: reports_submitted and reports_not_working (in worst condition), in json array format. |
 			
-			<a name="get"></a>
-			* GET requests: The request can be called from a browser URL.
-			<a name="post"></a>
-			* POST requests: The request can only be called from AJAX.
+		<a name="get"></a>
+		* GET requests: The request can be called from a browser URL.
+		<a name="post"></a>
+		* POST requests: The request can only be called from AJAX.
 			
 
 [Go to Top](#top)
@@ -213,7 +214,7 @@ The files associated to this RESTful API are located in the ```cege0043-api-21-2
 ```
 * https://cege0043-2022-45.cs.ucl.ac.uk/api/dailyParticipationRates
 ```json
-
+[{"array_to_json":[{"day":"Tuesday","reports_submitted":153,"reports_not_working":37},{"day":"Saturday","reports_submitted":143,"reports_not_working":34},{"day":"Friday","reports_submitted":47,"reports_not_working":15},{"day":"Wednesday","reports_submitted":222,"reports_not_working":64},{"day":"Thursday","reports_submitted":238,"reports_not_working":52},{"day":"Sunday","reports_submitted":130,"reports_not_working":38},{"day":"Monday","reports_submitted":214,"reports_not_working":58}]}]
 ```
 
 
