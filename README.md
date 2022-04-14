@@ -233,8 +233,7 @@ You should be able to see similar results when you successfully followed the ste
 	* Functions and SQL queries related to data uploading, data removal, data processing, database connection, and getting the port number.
 	* Template of the [README.md](https://moodle.ucl.ac.uk/pluginfile.php/2598095/mod_resource/content/1/technical-documentation-example.pdf)
 
-* npm express package
-* pg package
+* NodeJS modules from [express](https://www.npmjs.com/package/express) and [pg](https://www.npmjs.com/package/pg) packages are used.
 * The README.md file is developed with the help of [Markdown Cheatsheet](https://github.com/tchapi/markdown-cheatsheet/blob/master/README.md#TOP)
 
 [Go to Top](#top)
